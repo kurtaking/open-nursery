@@ -12,12 +12,14 @@ function AuthedLayout() {
   const { user, isLoading } = useAuth();
 
   if (isLoading) {
-    return <div>Loading...</div>; // Or your loading component
+    return <div>Loading...</div>;
   }
 
-  if (!user) {
-    return <Navigate to="/login" />;
-  }
+  console.log('user', user);
+
+  // if (!user) {
+  //   return <Navigate to="/login" />;
+  // }
 
   return (
     <SidebarProvider>
