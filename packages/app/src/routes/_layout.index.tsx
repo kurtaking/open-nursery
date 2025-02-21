@@ -1,7 +1,7 @@
 import FeatureCarousel from '@/components/signed-out/feature-carousel';
 import { SignedOutNavigation } from '@/components/signed-out/navigation';
 import { Button } from '@/components/ui/button';
-import { createFileRoute } from '@tanstack/react-router';
+import { Link, createFileRoute } from '@tanstack/react-router';
 import { Github } from 'lucide-react';
 
 export const Route = createFileRoute('/_layout/')({
@@ -26,14 +26,16 @@ function LandingPage() {
               OpenNursery helps you and your caregiving team track feeds, changes, sleep, and milestones in one simple
               dashboard. Make data-driven parenting decisions with powerful insights and trends.
             </p>
-            {/* <div className="mt-8 flex gap-4 justify-center">
-              <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
-                Get Started
-              </Button>
+            <div className="mt-8 flex gap-4 justify-center">
+              <Link to="/sign-up">
+                <Button size="lg" variant="outline" className="hover:bg-blue-400">
+                  Get Started
+                </Button>
+              </Link>
               <Button size="lg" variant="outline">
                 Learn More
               </Button>
-            </div> */}
+            </div>
           </div>
         </section>
 

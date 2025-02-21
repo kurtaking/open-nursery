@@ -57,9 +57,7 @@ function LoginForm({ className, ...props }: Readonly<React.ComponentPropsWithout
                   <div className="flex items-center">
                     <Label htmlFor="password">Password</Label>
                     {/* TODO: Add forgot password link */}
-                    {/* <a href="#" className="ml-auto text-sm underline-offset-4 hover:underline">
-                      Forgot your password?
-                    </a> */}
+                    <div className="ml-auto text-sm underline-offset-4 hover:underline">Forgot your password?</div>
                   </div>
                   <Input id="password" type="password" {...register('password')} />
                   {errors.password && <p className="text-sm text-red-500">{errors.password.message}</p>}

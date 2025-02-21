@@ -9,15 +9,13 @@ import { Link } from '@tanstack/react-router';
 
 export function SignedOutNavigation() {
   return (
-    <NavigationMenu>
+    <NavigationMenu className="p-5">
       <NavigationMenuList>
-        {/* <NavigationMenuItem>
+        <NavigationMenuItem>
           <Link to="/">
-            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-              Home
-            </NavigationMenuLink>
+            <NavigationMenuLink className={navigationMenuTriggerStyle()}>Home</NavigationMenuLink>
           </Link>
-        </NavigationMenuItem> */}
+        </NavigationMenuItem>
         <NavigationMenuItem>
           <Link to="/sign-up">
             <NavigationMenuLink className={navigationMenuTriggerStyle()}>Sign up</NavigationMenuLink>
