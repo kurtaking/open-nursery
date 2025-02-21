@@ -20,15 +20,11 @@
     "@types/node": "^20.11.17",
     "drizzle-kit": "^0.30.4",
     "husky": "^9.1.7",
-    "lint-staged": ">=10",
     "tsx": "^4.19.2",
     "typescript": "^5.7.3"
   },
   "workspaces": [
     "./packages/*"
   ],
-  "packageManager": "yarn@4.6.0",
-  "lint-staged": {
-    "*.{js,ts,jsx,tsx}": "biome check"
-  }
+  "packageManager": "yarn@4.6.0"
 }
