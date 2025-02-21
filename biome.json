@@ -16,6 +16,7 @@
       "build",
       "public",
       "src/db/schema",
+      "**/migrations",
       "**/routeTree.gen.ts",
       "**/components/ui/**",
       "**/reportWebVitals.ts",
