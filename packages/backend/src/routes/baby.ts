@@ -8,6 +8,7 @@ import {
   type BabyWithCaregivers,
   babiesTable,
   babyToCaregiversTable,
+  caregiversTable,
   insertBabySchema,
 } from '~/schema/personas-schema';
 import { nurseryDb } from '~/service';
@@ -57,26 +58,76 @@ app.post('/', zValidator('json', insertBabySchema), async (c) => {
   try {
     const userId = c.get('user').id;
 
+    // First, verify the user has a caregiver profile
+    const caregiver = await nurseryDb.query.caregiversTable.findFirst({
+      where: eq(caregiversTable.userId, userId),
+    });
+
+    if (!caregiver) {
+      return c.json<ApiResponse<Baby>>(
+        {
+          data: null,
+          error: {
+            message: 'Caregiver profile not found',
+            code: 'CAREGIVER_NOT_FOUND',
+          },
+        },
+        404
+      );
+    }
+
     const body = await c.req.json();
 
     // Start a transaction to create baby and relationship
     const result = await nurseryDb.transaction(async (tx) => {
-      const [baby] = await tx.insert(babiesTable).values(body).returning();
+      // Create the baby profile
+      const [baby] = await tx
+        .insert(babiesTable)
+        .values({
+          ...body,
+          status: 'active', // Ensure default status is set
+        })
+        .returning();
 
+      // Create the relationship between baby and caregiver
       await tx.insert(babyToCaregiversTable).values({
         babyId: baby.id,
-        caregiverId: Number(userId),
+        caregiverId: caregiver.id, // Use caregiver.id instead of userId
         role: 'primary',
       });
 
-      return baby;
+      // Return the created baby with caregiver relationship
+      return nurseryDb.query.babiesTable.findFirst({
+        where: eq(babiesTable.id, baby.id),
+        with: {
+          caregivers: {
+            with: {
+              caregiver: true,
+            },
+          },
+        },
+      });
     });
 
-    return c.json<ApiResponse<Baby>>({
+    if (!result) {
+      return c.json<ApiResponse<BabyWithCaregivers>>(
+        {
+          data: null,
+          error: {
+            message: 'Failed to create baby profile',
+            code: 'CREATE_ERROR',
+          },
+        },
+        500
+      );
+    }
+
+    return c.json<ApiResponse<BabyWithCaregivers>>({
       data: result,
       error: null,
     });
   } catch (error) {
+    console.error('Failed to create baby profile:', error);
     return c.json<ApiResponse<Baby>>(
       {
         data: null,
