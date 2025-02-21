@@ -30,6 +30,6 @@
   ],
   "packageManager": "yarn@4.6.0",
   "lint-staged": {
-    "*.{js,ts,jsx,tsx}": "biome check --write"
+    "*.{js,ts,jsx,tsx}": "yarn check"
   }
 }
