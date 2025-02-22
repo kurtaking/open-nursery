@@ -12,6 +12,10 @@ import {
   insertBabySchema,
 } from '~/schema/personas-schema';
 import { nurseryDb } from '~/service';
+
+type CreateBabyResponse = ApiResponse<Baby>;
+type GetBabiesResponse = ApiResponse<Baby[]>;
+
 const app = new Hono<{
   Variables: {
     user: typeof auth.$Infer.Session.user;
@@ -33,7 +37,7 @@ app.get('/', async (c) => {
     console.log('Caregiver', caregiver);
 
     if (!caregiver) {
-      return c.json<ApiResponse<Baby[]>>({
+      return c.json<GetBabiesResponse>({
         data: [],
         error: null,
       });
@@ -59,13 +63,13 @@ app.get('/', async (c) => {
       babies,
     });
 
-    return c.json<ApiResponse<Baby[]>>({
+    return c.json<GetBabiesResponse>({
       data: babies,
       error: null,
     });
   } catch (error) {
     console.error('Error fetching babies:', error);
-    return c.json<ApiResponse<Baby[]>>(
+    return c.json<GetBabiesResponse>(
       {
         data: null,
         error: {

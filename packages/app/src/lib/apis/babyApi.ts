@@ -1,17 +1,33 @@
-import type { Baby, BabyWithCaregivers } from '../types';
+import type { ApiResponse, Baby } from '../types';
 import { fetchApi } from './helpers';
 
 const baseUrl = '/auth/babies';
 
-export const babyApi = {
+type CreateBabyResponse = ApiResponse<Baby>;
+type GetBabiesResponse = ApiResponse<Baby[]>;
+
+interface BabyApi {
+  createBaby: (baby: Partial<Baby>) => Promise<CreateBabyResponse>;
+  getBabies: () => Promise<GetBabiesResponse>;
+}
+
+export const babyApi: BabyApi = {
   createBaby: (baby: Partial<Baby>) => {
-    return fetchApi<{ data: Baby; error: null }>(`${baseUrl}`, {
+    return fetchApi<Baby>(`${baseUrl}`, {
       method: 'POST',
       body: JSON.stringify(baby),
     });
   },
 
-  getBabies: () => {
-    return fetchApi<{ data: Baby[]; error: null }>(`${baseUrl}`);
+  getBabies: async () => {
+    const response = await fetchApi<GetBabiesResponse>(`${baseUrl}`);
+
+    if (response.error) {
+      throw new Error(response.error.message);
+    }
+
+    console.log('response', response);
+
+    return response.data ?? [];
   },
 };

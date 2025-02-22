@@ -16,18 +16,19 @@ export const Route = createFileRoute('/_authed/babies')({
 function BabiesPage() {
   const { data: babiesResponse, isLoading } = useQuery({
     queryKey: ['babies'],
-    queryFn: () => babyApi.getBabies(),
+    queryFn: async () => await babyApi.getBabies(),
   });
 
-  const babies = babiesResponse?.data?.data ?? [];
-  const activeBabies = babies.filter((baby) => baby.status === 'active');
-
   if (isLoading) {
-    return <div>Loading...</div>; // Consider using a proper loading spinner component
+    // todo: build a loading spinner
+    return <p>Loading...</p>;
   }
 
+  const babies = babiesResponse?.data ?? [];
+  const activeBabies = babies.filter((baby) => baby.status === 'active');
+
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto px-4 py-6">
       <PageHeader title="Baby Profiles">
         <Dialog>
           <DialogTrigger asChild>
@@ -47,24 +48,26 @@ function BabiesPage() {
 
       <hr className="my-6" />
 
-      {activeBabies.length === 0 ? (
-        <Card>
-          <CardHeader>
-            <CardTitle>No babies yet</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground">Click the "New Baby" button to add your first baby profile.</p>
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="grid grid-cols-1 gap-4">
-          {activeBabies.map((baby) => (
-            <div key={baby.id}>
-              <ProfileCard baby={baby} />
-            </div>
-          ))}
-        </div>
-      )}
+      <div className="w-full">
+        {activeBabies.length === 0 ? (
+          <Card>
+            <CardHeader>
+              <CardTitle>No babies yet</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground">Click the "New Baby" button to add your first baby profile.</p>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {activeBabies.map((baby) => (
+              <div key={baby.id}>
+                <ProfileCard baby={baby} />
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
