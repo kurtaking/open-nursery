@@ -1,5 +1,5 @@
 import { zValidator } from '@hono/zod-validator';
-import { and, eq } from 'drizzle-orm';
+import { and, eq, inArray } from 'drizzle-orm';
 import { Hono } from 'hono';
 import type { auth } from 'src/lib/auth';
 import type { ApiResponse } from 'src/lib/types';
@@ -23,16 +23,40 @@ const app = new Hono<{
 app.get('/', async (c) => {
   try {
     const userId = c.get('user').id;
+    console.log('User ID', userId);
 
+    // First get the caregiver profile
+    const caregiver = await nurseryDb.query.caregiversTable.findFirst({
+      where: eq(caregiversTable.userId, userId),
+    });
+
+    console.log('Caregiver', caregiver);
+
+    if (!caregiver) {
+      return c.json<ApiResponse<Baby[]>>({
+        data: [],
+        error: null,
+      });
+    }
+
+    // Get the babies through the relationship table
+    const babyRelations = await nurseryDb
+      .select()
+      .from(babyToCaregiversTable)
+      .where(eq(babyToCaregiversTable.caregiverId, caregiver.id));
+
+    const babyIds = babyRelations.map((rel) => rel.babyId);
+
+    // Then get all the babies that match those IDs
     const babies = await nurseryDb.query.babiesTable.findMany({
-      with: {
-        caregivers: {
-          columns: {
-            role: true,
-          },
-          where: eq(babyToCaregiversTable.caregiverId, Number(userId)),
-        },
-      },
+      where: babyIds.length > 0 ? inArray(babiesTable.id, babyIds) : undefined,
+    });
+
+    console.log('Babies', {
+      userId,
+      caregiverId: caregiver.id,
+      babyRelations,
+      babies,
     });
 
     return c.json<ApiResponse<Baby[]>>({
@@ -40,6 +64,7 @@ app.get('/', async (c) => {
       error: null,
     });
   } catch (error) {
+    console.error('Error fetching babies:', error);
     return c.json<ApiResponse<Baby[]>>(
       {
         data: null,

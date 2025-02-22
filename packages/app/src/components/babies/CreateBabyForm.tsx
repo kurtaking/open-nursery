@@ -4,6 +4,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { babyApi } from '@/lib/apis/babyApi';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
@@ -30,11 +31,14 @@ export function CreateBabyForm() {
     resolver: zodResolver(createBabySchema),
   });
 
+  const queryClient = useQueryClient();
+
   const onSubmit = async (data: CreateBabyFormValues) => {
     try {
       const response = await babyApi.createBaby(data);
-
       console.log(response);
+
+      queryClient.invalidateQueries({ queryKey: ['babies'] });
 
       toast.success('Baby profile created successfully!', {
         duration: 3000,
