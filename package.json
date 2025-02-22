@@ -29,6 +29,6 @@
   "workspaces": ["./packages/*"],
   "packageManager": "yarn@4.6.0",
   "lint-staged": {
-    "*": "yarn check:all"
+    "*": "yarn check && yarn check:all"
   }
 }
