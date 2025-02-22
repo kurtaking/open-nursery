@@ -55,6 +55,8 @@ app.get('/', async (c) => {
 
 // Create new baby
 app.post('/', zValidator('json', insertBabySchema), async (c) => {
+  console.log('Creating new baby');
+
   try {
     const userId = c.get('user').id;
 
@@ -62,6 +64,8 @@ app.post('/', zValidator('json', insertBabySchema), async (c) => {
     const caregiver = await nurseryDb.query.caregiversTable.findFirst({
       where: eq(caregiversTable.userId, userId),
     });
+
+    console.log('Caregiver found', caregiver);
 
     if (!caregiver) {
       return c.json<ApiResponse<Baby>>(
@@ -78,6 +82,8 @@ app.post('/', zValidator('json', insertBabySchema), async (c) => {
 
     const body = await c.req.json();
 
+    console.log('Body', body);
+
     // Start a transaction to create baby and relationship
     const result = await nurseryDb.transaction(async (tx) => {
       // Create the baby profile
@@ -85,32 +91,27 @@ app.post('/', zValidator('json', insertBabySchema), async (c) => {
         .insert(babiesTable)
         .values({
           ...body,
-          status: 'active', // Ensure default status is set
+          status: 'active',
+          currentLength: body.birthLength,
+          currentWeight: body.birthWeight,
+          createdAt: new Date(),
+          updatedAt: new Date(),
         })
         .returning();
 
       // Create the relationship between baby and caregiver
       await tx.insert(babyToCaregiversTable).values({
         babyId: baby.id,
-        caregiverId: caregiver.id, // Use caregiver.id instead of userId
+        caregiverId: caregiver.id,
         role: 'primary',
       });
 
-      // Return the created baby with caregiver relationship
-      return nurseryDb.query.babiesTable.findFirst({
-        where: eq(babiesTable.id, baby.id),
-        with: {
-          caregivers: {
-            with: {
-              caregiver: true,
-            },
-          },
-        },
-      });
+      // Return the created baby
+      return baby; // Just return the baby object directly
     });
 
     if (!result) {
-      return c.json<ApiResponse<BabyWithCaregivers>>(
+      return c.json<ApiResponse<Baby>>(
         {
           data: null,
           error: {
@@ -122,7 +123,8 @@ app.post('/', zValidator('json', insertBabySchema), async (c) => {
       );
     }
 
-    return c.json<ApiResponse<BabyWithCaregivers>>({
+    // Return the result
+    return c.json<ApiResponse<Baby>>({
       data: result,
       error: null,
     });

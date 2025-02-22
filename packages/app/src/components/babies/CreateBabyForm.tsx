@@ -10,7 +10,7 @@ import { z } from 'zod';
 
 const createBabySchema = z.object({
   name: z.string().min(1, 'Name is required'),
-  dateOfBirth: z.string().min(1, 'Date of birth is required'),
+  dateOfBirth: z.date({ coerce: true }),
   gender: z.enum(['male', 'female', 'other']).optional(),
   birthWeight: z.number().optional(), // in grams
   birthLength: z.number().optional(), // in millimeters
@@ -32,12 +32,7 @@ export function CreateBabyForm() {
 
   const onSubmit = async (data: CreateBabyFormValues) => {
     try {
-      const response = await babyApi.createBaby({
-        status: 'active',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        ...data,
-      });
+      const response = await babyApi.createBaby(data);
 
       console.log(response);
 
@@ -61,14 +56,21 @@ export function CreateBabyForm() {
 
       <div className="space-y-2">
         <Label htmlFor="dateOfBirth">Date of Birth</Label>
-        <Input id="dateOfBirth" type="date" {...register('dateOfBirth')} />
+        <Input id="dateOfBirth" type="date" {...register('dateOfBirth', { value: new Date() })} />
         {errors.dateOfBirth && <p className="text-sm text-red-500">{errors.dateOfBirth.message}</p>}
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="gender">Gender</Label>
-        <Select onValueChange={(value) => register('gender').onChange(value)}>
-          <SelectTrigger>
+        <Select
+          onValueChange={(value) => {
+            const genderValue = value as 'male' | 'female' | 'other';
+            register('gender').onChange({
+              target: { value: genderValue, name: 'gender' },
+            });
+          }}
+        >
+          <SelectTrigger id="gender">
             <SelectValue placeholder="Select gender" />
           </SelectTrigger>
           <SelectContent>
@@ -77,6 +79,7 @@ export function CreateBabyForm() {
             <SelectItem value="other">Other</SelectItem>
           </SelectContent>
         </Select>
+        {errors.gender && <p className="text-sm text-red-500">{errors.gender.message}</p>}
       </div>
 
       <div className="space-y-2">

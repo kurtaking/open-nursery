@@ -6,7 +6,7 @@ type CreateBabyResponse = {
   baby: Partial<Baby>;
 };
 
-const baseUrl = '/babies';
+const baseUrl = '/auth/babies';
 
 export const babyApi = {
   createBaby: (baby: Partial<Baby>) => {
