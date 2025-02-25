@@ -1,6 +1,6 @@
 import PageHeader from '@/components/PageHeader';
 import { BabyProfileCard } from '@/components/babies/BabyProfileCard';
-import { CreateBabyForm } from '@/components/babies/CreateBabyForm';
+import { BabyProfileForm } from '@/components/babies/BabyProfileForm';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -8,7 +8,7 @@ import { babyApi } from '@/lib/apis/babyApi';
 import { useQuery } from '@tanstack/react-query';
 import { PlusCircle } from 'lucide-react';
 
-export function BabyProfilesPage() {
+export function BabiesPage() {
   const { data: babies, isLoading } = useQuery({
     queryKey: ['babies'],
     queryFn: async () => await babyApi.getBabies(),
@@ -22,7 +22,7 @@ export function BabyProfilesPage() {
   const activeBabies = babies?.filter((baby) => baby.status === 'active');
 
   return (
-    <div className="container mx-auto px-4 py-6">
+    <div className="container w-full mx-auto px-4 py-6">
       <PageHeader title="Baby Profiles">
         <Dialog>
           <DialogTrigger asChild>
@@ -35,7 +35,7 @@ export function BabyProfilesPage() {
             <DialogHeader>
               <DialogTitle>Add New Baby</DialogTitle>
             </DialogHeader>
-            <CreateBabyForm />
+            <BabyProfileForm />
           </DialogContent>
         </Dialog>
       </PageHeader>
@@ -53,9 +53,9 @@ export function BabyProfilesPage() {
             </CardContent>
           </Card>
         ) : (
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <div className="grid grid-cols-12 gap-6">
             {activeBabies?.map((baby) => (
-              <div key={baby.id}>
+              <div key={baby.id} className="col-span-3 min-w-90">
                 <BabyProfileCard baby={baby} />
               </div>
             ))}

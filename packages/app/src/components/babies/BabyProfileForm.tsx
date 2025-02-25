@@ -22,7 +22,7 @@ const createBabySchema = z.object({
 
 type CreateBabyFormValues = z.infer<typeof createBabySchema>;
 
-export function CreateBabyForm() {
+export function BabyProfileForm() {
   const {
     register,
     handleSubmit,

@@ -16,11 +16,11 @@ interface BabyProfileCardProps {
 }
 
 export function BabyProfileCard({ baby, onEdit, onArchive }: Readonly<BabyProfileCardProps>) {
-  const age = baby.dateOfBirth ? calculateAge(new Date(baby.dateOfBirth)) : 'Unknown';
+  const age = '1 year, 2 months, 5 days';
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+      <CardHeader className="flex flex-row items-center justify-between pb-2">
         <CardTitle className="text-xl font-bold">{baby.name}</CardTitle>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -40,39 +40,17 @@ export function BabyProfileCard({ baby, onEdit, onArchive }: Readonly<BabyProfil
           </DropdownMenuContent>
         </DropdownMenu>
       </CardHeader>
+
       <CardContent>
         <div className="grid gap-2">
-          <div className="flex justify-between py-1">
-            <span className="text-muted-foreground">Age</span>
-            <span className="font-medium">{age}</span>
-          </div>
-          <div className="flex justify-between py-1">
-            <span className="text-muted-foreground">Date of Birth</span>
-            <span className="font-medium">{new Date(baby.dateOfBirth).toLocaleDateString()}</span>
-          </div>
+          <CardDisplayItem label="Age" value={age} />
+          <CardDisplayItem label="Date of Birth" value={new Date(baby.dateOfBirth).toLocaleDateString()} />
           {baby.gender && (
-            <div className="flex justify-between py-1">
-              <span className="text-muted-foreground">Gender</span>
-              <span className="font-medium capitalize">{baby.gender}</span>
-            </div>
+            <CardDisplayItem label="Gender" value={baby.gender.charAt(0).toUpperCase() + baby.gender.slice(1)} />
           )}
-          {baby.currentWeight && (
-            <div className="flex justify-between py-1">
-              <span className="text-muted-foreground">Current Weight</span>
-              <span className="font-medium">{formatWeight(baby.currentWeight)}</span>
-            </div>
-          )}
-          {baby.currentLength && (
-            <div className="flex justify-between py-1">
-              <span className="text-muted-foreground">Current Length</span>
-              <span className="font-medium">{formatLength(baby.currentLength)}</span>
-            </div>
-          )}
-          {baby.notes && (
-            <div className="mt-2 pt-2 border-t">
-              <p className="text-sm text-muted-foreground">{baby.notes}</p>
-            </div>
-          )}
+          {baby.currentWeight && <CardDisplayItem label="Current Weight" value={formatWeight(baby.currentWeight)} />}
+          {baby.currentLength && <CardDisplayItem label="Current Length" value={formatLength(baby.currentLength)} />}
+          {baby.notes && <CardDisplayItem label="Notes" value={baby.notes} isNote />}
         </div>
       </CardContent>
     </Card>
@@ -90,9 +68,28 @@ function formatLength(mm: number): string {
   return `${(mm / 10).toFixed(1)} cm`;
 }
 
-function calculateAge(dateOfBirth: Date): string {
-  const today = new Date();
-  const age = today.getFullYear() - dateOfBirth.getFullYear();
-  const monthDiff = today.getMonth() - dateOfBirth.getMonth();
-  return `${age} year${age !== 1 ? 's' : ''}, ${monthDiff} month${monthDiff !== 1 ? 's' : ''}`;
+interface CardDisplayItemProps {
+  label: string;
+  value?: string | number;
+  className?: string;
+  isNote?: boolean;
+}
+
+export function CardDisplayItem({ label, value, className, isNote }: Readonly<CardDisplayItemProps>) {
+  if (!value) return null;
+
+  if (isNote) {
+    return (
+      <div className={`mt-2 pt-2 border-t ${className}`}>
+        <p className="text-sm text-muted-foreground">{value}</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className={`flex justify-between py-1 ${className}`}>
+      <span className="text-muted-foreground">{label}</span>
+      <span className="font-medium">{value}</span>
+    </div>
+  );
 }

@@ -1,4 +1,4 @@
-import { BabyProfilesPage } from '@/components/babies/BabyProfilesPage';
+import { BabiesPage as ImportedBabiesPage } from '@/components/babies/BabiesPage';
 import { createFileRoute } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/_authed/babies')({
@@ -6,5 +6,5 @@ export const Route = createFileRoute('/_authed/babies')({
 });
 
 function BabiesPage() {
-  return <BabyProfilesPage />;
+  return <ImportedBabiesPage />;
 }
