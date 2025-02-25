@@ -12,14 +12,14 @@ function AuthedLayout() {
   const { user, isLoading } = useAuth();
 
   if (isLoading) {
+    // todo: build a loading spinner
     return <div>Loading auth state...</div>;
   }
 
-  // todo: uncomment when fe auth is ready
-  // if (!user) {
-  //   console.log('No user found, redirecting to login');
-  //   return <Navigate to="/login" />;
-  // }
+  // todo: refactor this when auth is ready
+  if (user) {
+    console.log('No user found, redirecting to login');
+  }
 
   return (
     <SidebarProvider>

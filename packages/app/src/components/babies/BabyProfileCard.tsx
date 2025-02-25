@@ -9,15 +9,14 @@ import {
 import type { Baby } from '@/lib/types';
 import { Archive, Edit, MoreVertical } from 'lucide-react';
 
-interface ProfileCardProps {
+interface BabyProfileCardProps {
   baby: Baby;
   onEdit?: (baby: Baby) => void;
   onArchive?: (baby: Baby) => void;
 }
 
-export function ProfileCard({ baby, onEdit, onArchive }: Readonly<ProfileCardProps>) {
-  // const age = calculateAge(new Date(baby.dateOfBirth));
-  const age = '1 year, 2 months';
+export function BabyProfileCard({ baby, onEdit, onArchive }: Readonly<BabyProfileCardProps>) {
+  const age = baby.dateOfBirth ? calculateAge(new Date(baby.dateOfBirth)) : 'Unknown';
 
   return (
     <Card>
@@ -89,4 +88,11 @@ function formatWeight(grams: number): string {
 
 function formatLength(mm: number): string {
   return `${(mm / 10).toFixed(1)} cm`;
+}
+
+function calculateAge(dateOfBirth: Date): string {
+  const today = new Date();
+  const age = today.getFullYear() - dateOfBirth.getFullYear();
+  const monthDiff = today.getMonth() - dateOfBirth.getMonth();
+  return `${age} year${age !== 1 ? 's' : ''}, ${monthDiff} month${monthDiff !== 1 ? 's' : ''}`;
 }
