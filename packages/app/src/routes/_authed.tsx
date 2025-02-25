@@ -15,8 +15,6 @@ function AuthedLayout() {
     return <div>Loading...</div>;
   }
 
-  console.log('user', user);
-
   // if (!user) {
   //   return <Navigate to="/login" />;
   // }
