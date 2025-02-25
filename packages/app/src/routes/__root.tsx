@@ -1,14 +1,18 @@
-import { AuthProvider } from '@/context/AuthContext';
-import { Outlet, createRootRoute } from '@tanstack/react-router';
+import type { AuthContext } from '@/context/auth-context';
+import { Outlet, createRootRouteWithContext } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/router-devtools';
 import { Toaster } from 'sonner';
 
-export const Route = createRootRoute({
+type RouterContext = {
+  auth: AuthContext;
+};
+
+export const Route = createRootRouteWithContext<RouterContext>()({
   component: () => (
-    <AuthProvider>
+    <>
       <Outlet />
       <TanStackRouterDevtools position="bottom-right" />
       <Toaster position="top-center" />
-    </AuthProvider>
+    </>
   ),
 });
