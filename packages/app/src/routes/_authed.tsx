@@ -1,7 +1,7 @@
 import { AppSidebar } from '@/components/app-sidebar/AppSidebar';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { useAuth } from '@/context/AuthContext';
-import { Navigate, Outlet, createFileRoute } from '@tanstack/react-router';
+import { Outlet, createFileRoute } from '@tanstack/react-router';
 import { Toaster } from 'sonner';
 
 export const Route = createFileRoute('/_authed')({
@@ -12,10 +12,12 @@ function AuthedLayout() {
   const { user, isLoading } = useAuth();
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <div>Loading auth state...</div>;
   }
 
+  // todo: uncomment when fe auth is ready
   // if (!user) {
+  //   console.log('No user found, redirecting to login');
   //   return <Navigate to="/login" />;
   // }
 

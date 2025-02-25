@@ -3,31 +3,45 @@ import { fetchApi } from './helpers';
 
 const baseUrl = '/auth/babies';
 
-type CreateBabyResponse = ApiResponse<Baby>;
-type GetBabiesResponse = ApiResponse<Baby[]>;
+type CreateBabyFetchResponse = ApiResponse<Baby>;
+type GetBabiesFetchResponse = ApiResponse<Baby[]>;
 
 interface BabyApi {
-  createBaby: (baby: Partial<Baby>) => Promise<CreateBabyResponse>;
-  getBabies: () => Promise<GetBabiesResponse>;
+  createBaby: (baby: Partial<Baby>) => Promise<Baby>;
+  getBabies: () => Promise<Baby[]>;
 }
 
 export const babyApi: BabyApi = {
-  createBaby: (baby: Partial<Baby>) => {
-    return fetchApi<Baby>(`${baseUrl}`, {
+  createBaby: async (baby: Partial<Baby>) => {
+    const response = await fetchApi<CreateBabyFetchResponse>(`${baseUrl}`, {
       method: 'POST',
       body: JSON.stringify(baby),
     });
-  },
-
-  getBabies: async () => {
-    const response = await fetchApi<GetBabiesResponse>(`${baseUrl}`);
 
     if (response.error) {
       throw new Error(response.error.message);
     }
 
-    console.log('response', response);
+    if (!response.data?.data) {
+      throw new Error('No data returned from API');
+    }
 
-    return response.data ?? [];
+    const { data: newBaby } = response.data;
+    return newBaby;
+  },
+
+  getBabies: async () => {
+    const response = await fetchApi<GetBabiesFetchResponse>(`${baseUrl}`);
+
+    if (response.error) {
+      throw new Error(response.error.message);
+    }
+
+    if (!response.data?.data) {
+      return [];
+    }
+
+    const { data: babies } = response.data;
+    return babies;
   },
 };

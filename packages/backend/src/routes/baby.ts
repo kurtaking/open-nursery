@@ -27,14 +27,11 @@ const app = new Hono<{
 app.get('/', async (c) => {
   try {
     const userId = c.get('user').id;
-    console.log('User ID', userId);
 
     // First get the caregiver profile
     const caregiver = await nurseryDb.query.caregiversTable.findFirst({
       where: eq(caregiversTable.userId, userId),
     });
-
-    console.log('Caregiver', caregiver);
 
     if (!caregiver) {
       return c.json<GetBabiesResponse>({
@@ -54,13 +51,6 @@ app.get('/', async (c) => {
     // Then get all the babies that match those IDs
     const babies = await nurseryDb.query.babiesTable.findMany({
       where: babyIds.length > 0 ? inArray(babiesTable.id, babyIds) : undefined,
-    });
-
-    console.log('Babies', {
-      userId,
-      caregiverId: caregiver.id,
-      babyRelations,
-      babies,
     });
 
     return c.json<GetBabiesResponse>({
@@ -84,8 +74,6 @@ app.get('/', async (c) => {
 
 // Create new baby
 app.post('/', zValidator('json', insertBabySchema), async (c) => {
-  console.log('Creating new baby');
-
   try {
     const userId = c.get('user').id;
 
@@ -93,8 +81,6 @@ app.post('/', zValidator('json', insertBabySchema), async (c) => {
     const caregiver = await nurseryDb.query.caregiversTable.findFirst({
       where: eq(caregiversTable.userId, userId),
     });
-
-    console.log('Caregiver found', caregiver);
 
     if (!caregiver) {
       return c.json<ApiResponse<Baby>>(
@@ -110,8 +96,6 @@ app.post('/', zValidator('json', insertBabySchema), async (c) => {
     }
 
     const body = await c.req.json();
-
-    console.log('Body', body);
 
     // Start a transaction to create baby and relationship
     const result = await nurseryDb.transaction(async (tx) => {
