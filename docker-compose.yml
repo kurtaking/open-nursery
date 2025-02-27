@@ -1,0 +1,14 @@
+name: "open-nursery"
+
+services:
+  postgres:
+    image: postgres:13
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: pswd
+      POSTGRES_USER: postgres
+      POSTGRES_DB: mydb
+    restart: unless-stopped
+
+
