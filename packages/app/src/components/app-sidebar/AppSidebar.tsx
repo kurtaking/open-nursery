@@ -8,7 +8,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth } from '@/context/auth-context';
 import { useNavigate } from '@tanstack/react-router';
 import { Baby, LogOut, LogsIcon } from 'lucide-react';
 import { toast } from 'sonner';

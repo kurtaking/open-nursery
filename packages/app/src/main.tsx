@@ -8,12 +8,22 @@ import { routeTree } from './routeTree.gen';
 
 import './styles.css';
 import reportWebVitals from './reportWebVitals';
+import { useAuth } from './context/auth-context';
 
 // Create a new router instance
-const router = createRouter({ routeTree });
+const router = createRouter({ routeTree, context: { auth: undefined! } });
 
 // Create a QueryClient instance
 const queryClient = new QueryClient();
+
+function AppWithContext() {
+  const auth = useAuth()
+  return (
+    <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router} context={{ auth }} />
+    </QueryClientProvider>
+  );
+}
 
 // Register the router instance for type safety
 declare module '@tanstack/react-router' {
@@ -28,9 +38,7 @@ if (!rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement);
   root.render(
     <StrictMode>
-      <QueryClientProvider client={queryClient}>
-        <RouterProvider router={router} />
-      </QueryClientProvider>
+        <AppWithContext />
     </StrictMode>
   );
 }
