@@ -1,26 +1,18 @@
 import { AppSidebar } from '@/components/app-sidebar/AppSidebar';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
-import { Spinner } from '@/components/ui/spinner';
-import { useAuth } from '@/context/AuthContext';
-import { Outlet, createFileRoute } from '@tanstack/react-router';
+import { Outlet, createFileRoute, redirect } from '@tanstack/react-router';
 import { Toaster } from 'sonner';
 
 export const Route = createFileRoute('/_authed')({
+  beforeLoad: ({ context }) => {
+    if (!context.auth.isAuthenticated) {
+      redirect({ to: '/login' });
+    }
+  },
   component: AuthedLayout,
 });
 
 function AuthedLayout() {
-  const { user, isLoading } = useAuth();
-
-  if (isLoading) {
-    return <Spinner>Loading...</Spinner>;
-  }
-
-  // todo: refactor this when auth is ready
-  if (user) {
-    console.log('No user found, redirecting to login');
-  }
-
   return (
     <SidebarProvider>
       <AppSidebar />
